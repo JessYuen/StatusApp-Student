@@ -26,13 +26,12 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
     // reference to the database
     DatabaseReference mRef ;
-    TextView mTV;
     DatabaseReference mCondition;
     ArrayAdapter itemsAdapter;
     private static final String TAG = "MainActivity";
 
-    ArrayList<ForecastStatus> data = new ArrayList<ForecastStatus>();
-    ArrayList<String> keyList = new ArrayList<String>();
+    ArrayList<ForecastStatus> data = new ArrayList<>();
+    ArrayList<String> keyList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
