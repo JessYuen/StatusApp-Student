@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -28,8 +29,10 @@ public class MainActivity extends AppCompatActivity {
     TextView mTV;
     DatabaseReference mCondition;
     ArrayAdapter itemsAdapter;
+    private static final String TAG = "MainActivity";
 
     ArrayList<ForecastStatus> data = new ArrayList<ForecastStatus>();
+    ArrayList<String> keyList = new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         //setup the adapter
         itemsAdapter = new ForecastAdapter (this,  data);
         listView.setAdapter(itemsAdapter);
+
     }
 
 
@@ -54,7 +58,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 data.add(dataSnapshot.getValue(ForecastStatus.class));
+                keyList.add(dataSnapshot.getKey());
                 itemsAdapter.notifyDataSetChanged();
+                Log.d(TAG, "onChildAdded: added");
             }
 
             @Override
@@ -64,6 +70,17 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                String status = dataSnapshot.getValue(ForecastStatus.class).getStatus() + "\n";
+                String timeStamp = dataSnapshot.getValue(ForecastStatus.class).getTimeStamp();
+                String notice = "Item removed\n" + "Status: " + status + "TimeStamp: " + timeStamp;
+
+                String key = dataSnapshot.getKey();
+                int index = keyList.indexOf(key);
+                data.remove(index);
+                keyList.remove(index);
+
+                Toast.makeText(MainActivity.this, notice, Toast.LENGTH_SHORT).show();
+                itemsAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -95,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     String getTimeStamp(){
-       return   new SimpleDateFormat("dd.MM.yyyy @ ss:mm:hh", Locale.UK).format(new Date());
+       return   new SimpleDateFormat("dd.MM.yyyy @ hh:mm:ss", Locale.UK).format(new Date());
     }
 
 
